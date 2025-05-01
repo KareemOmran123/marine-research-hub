@@ -1,8 +1,10 @@
 import { useState } from 'react';
+import DarkModeToggle from '@/components/DarkModeToggle';
 
 export default function Home() {
   const [selectedTopic, setSelectedTopic] = useState('');
   const topics = [
+    'All Topics',
     'Marine Biology',
     'Oceanography',
     'Ecology',
@@ -21,7 +23,8 @@ export default function Home() {
     }
   
     try {
-      const response = await fetch(`/api/random?topic=${encodeURIComponent(selectedTopic)}`);
+      const queryTopic = selectedTopic === 'All Topics' ? 'marine science' : selectedTopic;
+      const response = await fetch(`/api/random?topic=${encodeURIComponent(queryTopic)}`);
       const paper = await response.json();
   
       if (paper.url) {
@@ -35,13 +38,14 @@ export default function Home() {
   };  
 
   return (
-    <main className="min-h-screen flex flex-col items-center justify-center bg-gray-100 p-6">
-      <h1 className="text-3xl font-bold mb-6 text-center text-black">Marine Science Paper Generator</h1>
+    <main className="min-h-screen flex flex-col items-center justify-center p-6 transition-colors duration-300 bg-white text-black dark:bg-gray-900 dark:text-white">
+      <DarkModeToggle />
+      <h1 className="text-3xl font-bold mb-6 text-center">Marine Science Paper Generator</h1>
 
       <select
         value={selectedTopic}
         onChange={(e) => setSelectedTopic(e.target.value)}
-        className="p-3 border rounded-md mb-4 w-full max-w-md text-black"
+        className="p-3 border rounded-md mb-4 w-full max-w-md text-black dark:text-white bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600"
       >
         <option value="">-- Select a topic --</option>
         {topics.map((topic) => (
