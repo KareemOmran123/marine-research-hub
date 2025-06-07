@@ -3,13 +3,10 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
-}
-
-@theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: Arial, Helvetica, sans-serif;
+  --font-mono: "Courier New", monospace;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -22,38 +19,17 @@
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans);
 }
-
-/* Default theme styles remain unchanged */
 
 /* Aquarium theme styles */
 .aquarium-theme {
   position: relative;
   overflow: hidden;
-  background: linear-gradient(to right, #001f3f, #0074d9); /* Deep ocean gradient */
   height: 100vh;
   width: 100vw;
-}
-
-.aquarium-theme::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-image: url('/public/printable-fish-aquarium-backgrounds-4.jpg'); /* Replace with your aquarium image */
+  background-image: url('/printable-fish-aquarium-backgrounds-4.jpg'); /* Correct path */
   background-size: cover;
   background-repeat: no-repeat;
-  animation: swim 20s linear infinite; /* Fish swimming animation */
-}
-
-@keyframes swim {
-  from {
-    transform: translateX(-100%);
-  }
-  to {
-    transform: translateX(100%);
-  }
+  background-position: center;
 }
