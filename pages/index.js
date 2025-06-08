@@ -2,67 +2,34 @@ import { useState } from 'react';
 
 export default function Home() {
   const [selectedTopic, setSelectedTopic] = useState('');
-  const [generatedArticle, setGeneratedArticle] = useState(null); // State to store the generated article
-  const topics = [
-    'All Topics',
-    'Marine Biology',
-    'Oceanography',
-    'Ecology',
-    'Climate Science',
-    'Environmental Science',
-    'Fisheries Science',
-    'Zoology',
-    'Geology',
-    'Marine Botany',
-  ];
-
-  const extractPaperTitleFromURL = async (url) => {
-    try {
-      const response = await fetch(url);
-      const html = await response.text();
-
-      // Attempt to extract the <title> content
-      const match = html.match(/<title>(.*?)\| Semantic Scholar<\/title>/);
-
-      if (match && match[1]) {
-        const cleanTitle = match[1].trim();
-        return cleanTitle;
-      } else {
-        // Fallback: Extract article name from the URL
-        const urlMatch = url.match(/\/paper\/([^/]+)\//); // Match the name between "/paper/" and the next "/"
-        const fallbackTitle = urlMatch ? decodeURIComponent(urlMatch[1].replace(/-/g, ' ')) : 'Unknown Article';
-        return fallbackTitle;
-      }
-    } catch (error) {
-      console.error('Error fetching or parsing:', error);
-
-      // Fallback: Extract article name from the URL
-      const urlMatch = url.match(/\/paper\/([^/]+)\//); // Match the name between "/paper/" and the next "/"
-      const fallbackTitle = urlMatch ? decodeURIComponent(urlMatch[1].replace(/-/g, ' ')) : 'Failed to fetch title';
-      return fallbackTitle;
-    }
-  };
+  const [generatedArticle, setGeneratedArticle] = useState(null);
+  const [error, setError] = useState('');
 
   const handleGenerate = async () => {
+    setError('');
+    setGeneratedArticle(null);
+
     if (!selectedTopic) {
-      alert('Please select a topic first.');
+      setError('Please select a topic first.');
       return;
     }
 
     try {
-      const queryTopic = selectedTopic === 'All Topics' ? 'marine science' : selectedTopic;
-      const response = await fetch(`/api/random?topic=${encodeURIComponent(queryTopic)}`);
+      const response = await fetch(`/api/random?topic=${encodeURIComponent(selectedTopic)}`);
       const paper = await response.json();
 
+      if (paper.error) {
+        setError(paper.error);
+        return;
+      }
+
       if (paper.url) {
-        // Use the topic and URL as identifiers
-        setGeneratedArticle({ topic: selectedTopic, url: paper.url, name: `Article from ${selectedTopic}` });
-        window.open(paper.url, '_blank');
+        setGeneratedArticle({ topic: selectedTopic, url: paper.url, name: paper.title || paper.url });
       } else {
-        alert('No link found for this paper.');
+        setError('No link found for this paper.');
       }
     } catch (err) {
-      alert('Error fetching paper.');
+      setError('Error fetching paper.');
     }
   };
 
@@ -107,11 +74,12 @@ export default function Home() {
         className="p-3 border rounded-md mb-4 w-full max-w-md text-black dark:text-white bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600"
       >
         <option value="">-- Select a topic --</option>
-        {topics.map((topic) => (
-          <option key={topic} value={topic}>
-            {topic}
-          </option>
-        ))}
+        <option value="marine science">Marine Science</option>
+        <option value="oceanography">Oceanography</option>
+        <option value="ecology">Ecology</option>
+        <option value="biology">Biology</option>
+        <option value="climate science">Climate Science</option>
+        {/* Add more topics as needed */}
       </select>
 
       <button
@@ -120,6 +88,24 @@ export default function Home() {
       >
         Generate Random Paper
       </button>
+
+      {error && (
+        <div className="mt-4 text-red-600">{error}</div>
+      )}
+
+      {generatedArticle && (
+        <div className="mt-4 p-4 border rounded bg-white shadow max-w-md w-full">
+          <div className="mb-2 font-semibold">{generatedArticle.topic}</div>
+          <a
+            href={generatedArticle.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-blue-600 hover:underline break-all"
+          >
+            {generatedArticle.name}
+          </a>
+        </div>
+      )}
     </main>
   );
 }
