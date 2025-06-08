@@ -47,7 +47,7 @@ export default function SavedArticles() {
                       textOverflow: 'ellipsis',
                     }}
                   >
-                    {article.url}
+                    {article.name}
                   </a>
                   <button
                     onClick={() => handleRemoveArticle(index)}
