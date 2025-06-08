@@ -1,4 +1,9 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+
+function isMobileDevice() {
+  if (typeof window === 'undefined') return false;
+  return /Mobi|Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+}
 
 export default function Home() {
   const [selectedTopic, setSelectedTopic] = useState('');
@@ -7,6 +12,11 @@ export default function Home() {
   const [showToast, setShowToast] = useState(false);
   const [toastVisible, setToastVisible] = useState(false);
   const [toastMessage, setToastMessage] = useState('');
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    setIsMobile(isMobileDevice());
+  }, []);
 
   const handleGenerate = async () => {
     setError('');
@@ -73,7 +83,7 @@ export default function Home() {
       {/* Toast Notification */}
       {showToast && (
         <div
-          className={`fixed top-6 left-1/2 transform -translate-x-1/2 text-white px-6 py-3 rounded shadow-lg z-50 transition-opacity duration-300 ${
+          className={`fixed ${isMobile ? 'bottom-6' : 'top-6'} left-1/2 transform -translate-x-1/2 text-white px-6 py-3 rounded shadow-lg z-50 transition-opacity duration-300 ${
             toastVisible ? 'opacity-100' : 'opacity-0'
           }`}
           style={{
